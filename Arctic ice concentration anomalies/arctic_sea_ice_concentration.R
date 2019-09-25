@@ -121,6 +121,7 @@ rasterToPoints(arctic_ice_conc_anom_201908) %>%
     title.position = "top",
     direction = "horizontal"
   ))
+ggsave("anomaly_201908.png", width=1200/125.9, height=1200/125.9, units="cm", scale=2, dpi="retina")
 
 # And now the same for the relative percentage-change anomalies. This is mostly the same as above, but with a couple of small differences:
 rasterToPoints(arctic_ice_conc_anom_201908_rel) %>% 
@@ -148,10 +149,11 @@ rasterToPoints(arctic_ice_conc_anom_201908_rel) %>%
     axis.title = element_blank()
   ) +
   guides(fill = guide_colourbar(
-    title = "Ice concentration anomaly (%pts)",
+    title = "Ice concentration anomaly (%)",
     title.position = "top",
     direction = "horizontal"
   ))
+ggsave("relative_anomaly_201908.png", width=1200/125.9, height=1200/125.9, units="cm", scale=2, dpi="retina")
 
 # Finally, we can write our two anomaly rasters into new GeoTIFF files
 writeRaster(arctic_ice_conc_anom_201908, "arctic_ice_conc_anom_201908.tif", options = c("TFW=YES"))
@@ -227,7 +229,7 @@ process_month_year <- function(year, month_two_digits, plot=TRUE){
       axis.title = element_blank()
     ) +
     guides(fill = guide_colourbar(
-      title = "Ice concentration anomaly (%pts)",
+      title = "Ice concentration anomaly (%)",
       title.position = "top",
       direction = "horizontal"
     ))
