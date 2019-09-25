@@ -103,6 +103,7 @@ rasterToPoints(arctic_ice_conc_anom_201908) %>%
   scale_fill_gradientn(colours = c("#FC0061", "#B80143", "#3D3D4A", "#0292B1", "#01D0FF"), na.value = "#2D303B", breaks = seq(-50, 50, 25), labels = seq(-50, 50, 25) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}) +
   # The line below sets up a cartesian coordinate grid with equal scaling on both axes, preserving the true aspect ratio of the geography we’re plotting
   coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
+  annotate("text", x = -3.2e3, y = 3.1e3, label="August 2019", family = "Open Sans", size = 12/2.857143, colour = "#FFFFFF", hjust=0) +
   # In the next block, we’re defining the visual theme of the graphic, setting things like the font family and position of the legend. The `panel.background` colour will determine the colour of the landmasses.
   theme(
     text = element_text(family = "Open Sans"),
@@ -141,6 +142,7 @@ rasterToPoints(arctic_ice_conc_anom_201908_rel) %>%
   geom_raster(aes(x,y,fill=anomaly)) +
   scale_fill_gradientn(colours = c("#FC0061", "#B80143", "#3D3D4A", "#0292B1", "#01D0FF"), na.value = "#2D303B", breaks = seq(-100, 100, 50), labels = seq(-100, 100, 50) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}) +
   coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
+  annotate("text", x = -3.2e3, y = 3.1e3, label="August 2019", family = "Open Sans", size = 12/2.857143, colour = "#FFFFFF", hjust=0) +
   theme(
     text = element_text(family = "Open Sans"),
     panel.background = element_rect(fill = "#4e5a6a"),
@@ -171,6 +173,8 @@ writeRaster(arctic_ice_conc_anom_201908_rel, "arctic_ice_conc_anom_201908_rel.ti
 # Set `plot` to `FALSE` if you just want to process the data and save the GeoTiffs without plotting the graphics
 process_month_year <- function(year, month_two_digits, plot=TRUE){
   
+  months <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+  
   month_anomaly <- arctic_ice_conc_list_months[month_two_digits][[1]][year][[1]] %>% 
     subtract(average_list_months[month_two_digits][[1]])
   
@@ -196,6 +200,7 @@ process_month_year <- function(year, month_two_digits, plot=TRUE){
     geom_raster(aes(x,y,fill=anomaly)) +
     scale_fill_distiller(palette = "RdBu", direction=1, breaks = seq(-50, 50, 25), labels = seq(-50, 50, 25) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}, na.value = "grey90") +
     coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
+    annotate("text", x = -3.2e3, y = 3.1e3, label=paste0(months[as.numeric(month_two_digits)], " ", year), family = "Open Sans", size = 12/2.857143, colour = "#FFFFFF", hjust=0) +
     theme(
       text = element_text(family = "Open Sans"),
       panel.background = element_rect(fill = "grey60"),
@@ -225,6 +230,7 @@ process_month_year <- function(year, month_two_digits, plot=TRUE){
     geom_raster(aes(x,y,fill=anomaly)) +
     scale_fill_distiller(palette = "RdBu", direction=1, breaks = seq(-100, 100, 50), labels = seq(-100, 100, 50) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}, na.value = "grey90") +
     coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
+    annotate("text", x = -3.2e3, y = 3.1e3, label=paste0(months[as.numeric(month_two_digits)], " ", year), family = "Open Sans", size = 12/2.857143, colour = "#FFFFFF", hjust=0) +
     theme(
       text = element_text(family = "Open Sans"),
       panel.background = element_rect(fill = "grey60"),
