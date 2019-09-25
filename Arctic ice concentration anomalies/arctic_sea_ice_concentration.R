@@ -99,14 +99,14 @@ rasterToPoints(arctic_ice_conc_anom_201908) %>%
   )) %>% 
   ggplot() +
   geom_raster(aes(x,y,fill=anomaly)) +
-  # The line below defines our colour sale, using the red-blue diverging palette from ColorBrewer. The `labels` argument is just me being pedantic and adding `+` plus symbols to anomalies above zero, i.e cases where there is more ice than on average. NB the `na.value = "grey90` line is telling ggplot to colour any NA values — the holes we created where there is never any ice — in a light shade of grey. This is essentially our "open ocean" colour.
-  scale_fill_distiller(palette = "RdBu", direction=1, breaks = seq(-50, 50, 25), labels = seq(-50, 50, 25) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}, na.value = "grey90") +
+  # The line below defines our colour sale, using the red-blue diverging palette from ColorBrewer. The `labels` argument is just me being pedantic and adding `+` plus symbols to anomalies above zero, i.e cases where there is more ice than on average. NB the `na.value = "#2D303B` line is telling ggplot to colour any NA values — the holes we created where there is never any ice — in a light shade of grey. This is essentially our "open ocean" colour.
+  scale_fill_gradientn(colours = c("#FC0061", "#B80143", "#3D3D4A", "#0292B1", "#01D0FF"), na.value = "#2D303B", breaks = seq(-50, 50, 25), labels = seq(-50, 50, 25) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}) +
   # The line below sets up a cartesian coordinate grid with equal scaling on both axes, preserving the true aspect ratio of the geography we’re plotting
   coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
-  # In the next block, we’re defining the visual theme of the graphic, setting things like the font family and position of the legend
+  # In the next block, we’re defining the visual theme of the graphic, setting things like the font family and position of the legend. The `panel.background` colour will determine the colour of the landmasses.
   theme(
     text = element_text(family = "Open Sans"),
-    panel.background = element_rect(fill = "grey60"),
+    panel.background = element_rect(fill = "#4e5a6a"),
     panel.grid = element_blank(),
     legend.position = c(1,1),
     legend.justification = c(1,1),
@@ -117,11 +117,15 @@ rasterToPoints(arctic_ice_conc_anom_201908) %>%
   ) +
   # Below we set the legend title and position
   guides(fill = guide_colourbar(
-    title = "Ice concentration anomaly (%pts)",
+    title = "Ice concentration anomaly\n(Percentage points)",
     title.position = "top",
-    direction = "horizontal"
+    title.theme = element_text(color = "#FFFFFF", family = "Open Sans", size = 11),
+    label.position = "top",
+    label.theme = element_text(color = "#FFFFFF", family = "Open Sans", size = 10),
+    direction = "horizontal",
+    barwidth = 9
   ))
-ggsave("anomaly_201908.png", width=1200/125.9, height=1200/125.9, units="cm", scale=2, dpi="retina")
+ggsave("anomaly_201908.png", width=900/125.9, height=900/125.9, units="cm", scale=2, dpi="retina")
 
 # And now the same for the relative percentage-change anomalies. This is mostly the same as above, but with a couple of small differences:
 rasterToPoints(arctic_ice_conc_anom_201908_rel) %>% 
@@ -135,11 +139,11 @@ rasterToPoints(arctic_ice_conc_anom_201908_rel) %>%
   )) %>% 
   ggplot() +
   geom_raster(aes(x,y,fill=anomaly)) +
-  scale_fill_distiller(palette = "RdBu", direction=1, breaks = seq(-100, 100, 50), labels = seq(-100, 100, 50) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}, na.value = "grey90") +
+  scale_fill_gradientn(colours = c("#FC0061", "#B80143", "#3D3D4A", "#0292B1", "#01D0FF"), na.value = "#2D303B", breaks = seq(-100, 100, 50), labels = seq(-100, 100, 50) %>% {ifelse(. < 0, as.character(.), paste0("+",.))}) +
   coord_equal(xlim = c(-3e3, 3e3), ylim = c(-3e3, 3e3)) +
   theme(
     text = element_text(family = "Open Sans"),
-    panel.background = element_rect(fill = "grey60"),
+    panel.background = element_rect(fill = "#4e5a6a"),
     panel.grid = element_blank(),
     legend.position = c(1,1),
     legend.justification = c(1,1),
@@ -151,9 +155,13 @@ rasterToPoints(arctic_ice_conc_anom_201908_rel) %>%
   guides(fill = guide_colourbar(
     title = "Ice concentration anomaly (%)",
     title.position = "top",
-    direction = "horizontal"
+    title.theme = element_text(color = "#FFFFFF", family = "Open Sans", size = 11),
+    label.position = "top",
+    label.theme = element_text(color = "#FFFFFF", family = "Open Sans", size = 10),
+    direction = "horizontal",
+    barwidth = 10
   ))
-ggsave("relative_anomaly_201908.png", width=1200/125.9, height=1200/125.9, units="cm", scale=2, dpi="retina")
+ggsave("relative_anomaly_201908.png", width=900/125.9, height=900/125.9, units="cm", scale=2, dpi="retina")
 
 # Finally, we can write our two anomaly rasters into new GeoTIFF files
 writeRaster(arctic_ice_conc_anom_201908, "arctic_ice_conc_anom_201908.tif", options = c("TFW=YES"))
@@ -234,8 +242,10 @@ process_month_year <- function(year, month_two_digits, plot=TRUE){
       direction = "horizontal"
     ))
   
-  print(plot_ppt_anomaly)
-  print(plot_pc_anomaly)
+  if(plot == TRUE){
+    print(plot_ppt_anomaly)
+    print(plot_pc_anomaly) 
+  }
   
   writeRaster(month_anomaly, paste0("arctic_ice_conc_anom_",year,month_two_digits,".tif"), options = c("TFW=YES"))
   writeRaster(month_anomaly_rel, paste0("arctic_ice_conc_anom_",year,month_two_digits,"_rel.tif"), options = c("TFW=YES"))
